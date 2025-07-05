@@ -12,13 +12,12 @@ services:
 
     # Set environment variables based on the .env file
     env_file:
-      - .env
+      - ./next-app/.env
     volumes:
       - ./next-app/src:/app/src
       - ./next-app/public:/app/public
     restart: always
     ports:
       - 3000:3000
-
 
   # Add more containers below (nginx, postgres, etc.)
