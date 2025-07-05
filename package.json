@@ -1,5 +1,5 @@
 {
-  "name": "amazonfeedsinterface",
+  "name": "amazon-seller-api-interface",
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
@@ -20,12 +20,15 @@
   "dependencies": {
     "@emotion/cache": "^11.14.0",
     "@emotion/styled": "^11.14.1",
+    "@mui/icons-material": "^7.2.0",
     "@mui/material": "^7.2.0",
     "@mui/material-nextjs": "^7.2.0",
     "@mui/x-data-grid": "^8.6.0",
+    "@types/lodash": "^4.17.20",
     "amazon-sp-api": "^1.1.6",
     "next": "^15.3.4",
     "react": "^19.1.0",
-    "react-dom": "^19.1.0"
+    "react-dom": "^19.1.0",
+    "zod": "^3.25.74"
   }
 }
