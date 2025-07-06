@@ -1,5 +1,4 @@
 import { SellingPartner } from "amazon-sp-api";
-import { GetFeedsResponse } from "amazon-sp-api/lib/typings/operations/feeds";
 import { SpAPIClientConfig, GetFeedsFilters } from "types/types";
 
 export const getClient = (clientConfig: SpAPIClientConfig): SellingPartner => {
@@ -14,6 +13,9 @@ export const getClient = (clientConfig: SpAPIClientConfig): SellingPartner => {
       SELLING_PARTNER_APP_CLIENT_SECRET:
         process.env.SELLING_PARTNER_APP_CLIENT_SECRET,
     },
+    options: {
+      use_sandbox: clientConfig.use_sandbox,
+    },
   });
   return spClient;
 };
@@ -24,21 +26,6 @@ export const getFeeds = async (
 ) => {
   let nextToken: string | undefined = undefined;
   const allFeeds = [];
-  return {
-    feeds: [
-      {
-        feedId: "string",
-        feedType: "string",
-        marketplaceIds: ["string"],
-        createdTime: "2025-07-05T08:33:39.610Z",
-        processingStatus: "CANCELLED",
-        processingStartTime: "2025-07-05T08:33:39.610Z",
-        processingEndTime: "2025-07-05T08:33:39.610Z",
-        resultFeedDocumentId: "string",
-      },
-    ],
-    nextToken: "string",
-  };
 
   const spClient = getClient(clientConfig);
 
@@ -50,16 +37,15 @@ export const getFeeds = async (
         ? { nextToken }
         : {
             marketplaceIds: filters.marketplaceIds,
-            feedTypes: ["JSON_LISTINGS_FEED"],
+            feedTypes: filters.feedTypes,
             createdSince: filters.startDate,
             createdUntil: filters.endDate,
             processingStatuses: filters.feedStatus,
-            pageSize: 100,
+            pageSize: 10,
           },
     });
-
-    if (response.payload) {
-      allFeeds.push(...response.payload);
+    if (response.feeds) {
+      allFeeds.push(...response.feeds);
     }
 
     nextToken = response.nextToken;

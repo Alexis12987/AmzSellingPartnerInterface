@@ -1,26 +1,43 @@
 import { NextRequest, NextResponse } from "next/server";
-import { getFeeds } from "spApi/client";
+import { getFeeds } from "sp-api/client";
 import { validateQueryParams } from "validation/validateQueryParams";
-import { SpAPIClientConfigSchema } from "validation/validation-schema/feed";
+import {
+  SpAPIClientConfigSchema,
+  GetFeedsFiltersSchema,
+} from "validation/validation-schema/feed";
 import z from "zod/v4";
 
 export async function GET(request: NextRequest) {
   const { searchParams } = request.nextUrl;
 
-  const validation = validateQueryParams(
+  const configValidation = validateQueryParams(
     SpAPIClientConfigSchema,
-    request.nextUrl.searchParams
+    searchParams
   );
-  const params = Object.fromEntries(searchParams.entries());
+  if (!configValidation.success) {
+    return NextResponse.json(z.treeifyError(configValidation.error), {
+      status: 404,
+    });
+  }
 
-  if (!validation.success) {
-    return NextResponse.json(z.treeifyError(validation.error), { status: 404 });
+  const filterValidation = validateQueryParams(
+    GetFeedsFiltersSchema,
+    searchParams
+  );
+
+  if (!filterValidation.success) {
+    return NextResponse.json(z.treeifyError(filterValidation.error), {
+      status: 404,
+    });
   }
 
   try {
-    const crotte = await getFeeds(params, validation.data);
-    return NextResponse.json({ ...crotte });
+    const feeds = await getFeeds(filterValidation.data, configValidation.data);
+    return NextResponse.json({ feeds: feeds });
   } catch (error) {
-    return NextResponse.json({ result: error.message }, { status: 500 });
+    return NextResponse.json(
+      { result: `${error.code}: ${error.message} ${error.details}` },
+      { status: 404 }
+    );
   }
 }

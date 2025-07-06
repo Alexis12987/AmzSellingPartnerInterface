@@ -11,9 +11,12 @@ import {
   Select,
   TextField,
 } from "@mui/material";
-import { AmazonFeedProcessingStatus, AmazonMarketplaces } from "constant";
+import {
+  AmazonFeedProcessingStatus,
+  AmazonFeedType,
+  AmazonMarketplaces,
+} from "constant";
 import { GetFeedsFilters } from "types/types";
-import { loadSettings } from "local-storage/storageUtils";
 import { FormEvent, useState } from "react";
 
 interface FilterFormProps {
@@ -29,12 +32,13 @@ export default function FilterForm({
   const [feedStatus, setFeedStatus] = useState<AmazonFeedProcessingStatus[]>(
     []
   );
+  const [feedTypes, setFeedTypes] = useState<AmazonFeedType[]>([]);
   const [startDate, setStartDate] = useState("");
   const [endDate, setEndDate] = useState("");
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
-    onSubmit({ feedStatus, startDate, endDate, marketplaceIds });
+    onSubmit({ feedStatus, startDate, endDate, marketplaceIds, feedTypes });
   };
 
   return (
@@ -69,6 +73,37 @@ export default function FilterForm({
           {Object.values(AmazonFeedProcessingStatus).map((status) => (
             <MenuItem key={status} value={status}>
               <Checkbox checked={feedStatus.indexOf(status) > -1} />
+              <ListItemText primary={status} />
+            </MenuItem>
+          ))}
+        </Select>
+      </FormControl>
+      <FormControl variant="outlined" sx={{ minWidth: 200 }}>
+        <InputLabel>Feed Types</InputLabel>
+        <Select
+          multiple
+          value={feedTypes}
+          onChange={(e) =>
+            setFeedTypes(
+              (typeof e.target.value === "string"
+                ? e.target.value.split(",")
+                : e.target.value
+              ).map((v) => v as AmazonFeedType)
+            )
+          }
+          MenuProps={{
+            PaperProps: {
+              style: {
+                maxHeight: 300,
+              },
+            },
+          }}
+          label="Feed Types"
+          renderValue={(selected) => (selected as string[]).join(", ")}
+        >
+          {Object.values(AmazonFeedType).map((status) => (
+            <MenuItem key={status} value={status}>
+              <Checkbox checked={feedTypes.indexOf(status) > -1} />
               <ListItemText primary={status} />
             </MenuItem>
           ))}
@@ -143,14 +178,14 @@ export default function FilterForm({
       </FormControl>
       <TextField
         label="Date de début"
-        type="date"
+        type="datetime-local"
         value={startDate}
         onChange={(e) => setStartDate(e.target.value)}
         slotProps={{ inputLabel: { shrink: true } }}
       />
       <TextField
         label="Date de fin"
-        type="date"
+        type="datetime-local"
         value={endDate}
         onChange={(e) => setEndDate(e.target.value)}
         slotProps={{ inputLabel: { shrink: true } }}

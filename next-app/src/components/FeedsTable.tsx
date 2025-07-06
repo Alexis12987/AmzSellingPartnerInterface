@@ -11,7 +11,7 @@ const columns: GridColDef[] = [
     field: "marketplaceIds",
     headerName: "Marketplace IDs",
     width: 200,
-    valueGetter: (value: string[], row): string => value.join(", "),
+    valueGetter: (value: string, row): string => value || "",
   },
   {
     field: "createdTime",

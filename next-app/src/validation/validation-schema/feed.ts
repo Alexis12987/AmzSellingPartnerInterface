@@ -1,5 +1,5 @@
 import { z } from "zod/v4";
-import { AmazonFeedProcessingStatus } from "constant";
+import { AmazonFeedProcessingStatus, AmazonFeedType } from "constant";
 
 export const SpAPIClientConfigSchema = z.object({
   region: z.enum(["eu", "na", "fe"]),
@@ -9,8 +9,24 @@ export const SpAPIClientConfigSchema = z.object({
 });
 
 export const GetFeedsFiltersSchema = z.object({
-  feedStatus: z.array(z.enum(AmazonFeedProcessingStatus)).optional(),
-  startDate: z.iso.datetime().optional(),
-  endDate: z.iso.datetime().optional(),
-  marketplaceIds: z.array(z.string()).optional(),
+  feedStatus: z
+    .preprocess(
+      (val) => (typeof val === "string" ? [val] : val),
+      z.array(z.enum(AmazonFeedProcessingStatus))
+    )
+    .optional(),
+  startDate: z.string().optional(),
+  endDate: z.string().optional(),
+  marketplaceIds: z
+    .preprocess(
+      (val) => (typeof val === "string" ? [val] : val),
+      z.array(z.string())
+    )
+    .optional(),
+  feedTypes: z
+    .preprocess(
+      (val) => (typeof val === "string" ? [val] : val),
+      z.array(z.enum(AmazonFeedType)).max(10)
+    )
+    .optional(),
 });
