@@ -42,7 +42,7 @@ const columns: GridColDef[] = [
 type Props = { rows: AmazonFeed[] };
 
 export default function FeedsTable(props: Props) {
-  const paginationModel = { page: 0, pageSize: 10 };
+  const paginationModel = { page: 0, pageSize: 50 };
   const [rows, setRows] = useState<AmazonFeed[]>({ ...props.rows });
 
   useEffect(() => {
@@ -55,15 +55,17 @@ export default function FeedsTable(props: Props) {
   }, [props.rows]);
 
   return (
-    <Paper sx={{ height: 400, width: "100%" }}>
-      <DataGrid
-        rows={rows}
-        columns={columns}
-        initialState={{ pagination: { paginationModel } }}
-        pageSizeOptions={[5, 10]}
-        checkboxSelection
-        sx={{ border: 0 }}
-      />
-    </Paper>
+    <>
+      <Paper sx={{ height: 400, width: "100%" }}>
+        <DataGrid
+          rows={rows}
+          columns={columns}
+          initialState={{ pagination: { paginationModel } }}
+          pageSizeOptions={[10, 50]}
+          checkboxSelection
+          sx={{ border: 0 }}
+        />
+      </Paper>
+    </>
   );
 }

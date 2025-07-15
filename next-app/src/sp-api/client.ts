@@ -22,10 +22,11 @@ export const getClient = (clientConfig: SpAPIClientConfig): SellingPartner => {
 
 export const getFeeds = async (
   filters: GetFeedsFilters,
-  clientConfig: SpAPIClientConfig
+  clientConfig: SpAPIClientConfig,
+  iteratePages: boolean = true,
+  nextToken: string | undefined = undefined
 ) => {
-  let nextToken: string | undefined = undefined;
-  const allFeeds = [];
+  const feeds = [];
 
   const spClient = getClient(clientConfig);
 
@@ -41,15 +42,15 @@ export const getFeeds = async (
             createdSince: filters.startDate,
             createdUntil: filters.endDate,
             processingStatuses: filters.feedStatus,
-            pageSize: 10,
+            pageSize: 100,
           },
     });
     if (response.feeds) {
-      allFeeds.push(...response.feeds);
+      feeds.push(...response.feeds);
     }
 
     nextToken = response.nextToken;
-  } while (nextToken);
+  } while (nextToken && iteratePages);
 
-  return allFeeds;
+  return { nextToken, feeds };
 };
